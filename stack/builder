@@ -56,9 +56,9 @@ mkdir -p $build_root/scripts
 cat > $build_root/scripts/exec <<EOF
 #!/bin/bash
 export HOME=$app_root
-for file in $app_root/.profile.d/*.sh; do source \$file; done
+for file in \$HOME/.profile.d/*.sh; do source \$file; done
 hash -r
-cd $app_root
+cd \$HOME
 "\$@"
 EOF
 chmod +x $build_root/scripts/exec
@@ -66,9 +66,9 @@ chmod +x $build_root/scripts/exec
 cat > $build_root/scripts/start <<EOF
 #!/bin/bash
 export HOME=$app_root
-for file in $app_root/.profile.d/*.sh; do source \$file; done
+for file in \$HOME/.profile.d/*.sh; do source \$file; done
 hash -r
-cd $app_root
+cd \$HOME
 if [[ -f Procfile ]]; then
     prg=\$(ruby -ryaml -e "puts YAML.load_file('Procfile')['\$1']")
 else
