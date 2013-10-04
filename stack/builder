@@ -69,10 +69,11 @@ for file in $app_root/.profile.d/*.sh; do source \$file; done
 hash -r
 cd $app_root
 if [[ -f Procfile ]]; then
-    ruby -e "require 'yaml';puts YAML.load_file('Procfile')['\$1']" | bash
+    prg=\$(ruby -ryaml -e "puts YAML.load_file('Procfile')['\$1']")
 else
-    ruby -e "require 'yaml';puts (YAML.load_file('.release')['default_process_types'] || {})['\$1']" | bash
+    prg=\$(ruby -ryaml -e "puts (YAML.load_file('.release')['default_process_types'] || {})['\$1']")
 fi
+eval "\$prg"
 EOF
 chmod +x /start
 
