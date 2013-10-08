@@ -63,18 +63,27 @@ cd \$HOME
 EOF
 chmod +x $build_root/scripts/exec
 
-cat > $build_root/scripts/start <<EOF
+
+
+erb -r yaml > $build_root/scripts/start <<EOF
 #!/bin/bash
 export HOME=$app_root
 for file in \$HOME/.profile.d/*.sh; do source \$file; done
 hash -r
 cd \$HOME
-if [[ -f Procfile ]]; then
-    prg=\$(ruby -ryaml -e "puts YAML.load_file('Procfile')['\$1']")
+<% proc = if File.exists?('$build_root/Procfile')
+  YAML.load_file('$build_root/Procfile')
 else
-    prg=\$(ruby -ryaml -e "puts (YAML.load_file('.release')['default_process_types'] || {})['\$1']")
-fi
-eval "\$prg"
+  YAML.load_file('$build_root/.release')['default_process_types'] || {}
+end
+%>
+case "\$1" in
+<% proc.each_pair do |key, val| %>
+  "<%= key %>")
+    <%= val %>
+    ;;
+<% end %>
+esac
 EOF
 chmod +x $build_root/scripts/start
 
